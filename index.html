@@ -239,7 +239,7 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
 <nav class="nav">
   <div class="nav-brand" onclick="showView('dashboard')">
     <div class="nav-logo-wrap">
-      <img src="logo.png" alt="UC Westpark" onerror="this.style.display='none'">
+      <img src="UC_west_park_Logo-PNG.png" alt="UC Westpark" onerror="this.style.display='none'">
     </div>
     <span>UC Westpark</span>
   </div>
@@ -506,7 +506,7 @@ function viewProfile(id) {
   document.getElementById('profile-content').innerHTML = `
     <div class="profile-hero">
       <div class="profile-logo-corner">
-        <img src="logo.png" alt="UC Westpark" onerror="this.parentElement.innerHTML='<span class=profile-logo-corner-text>UC Westpark</span>'">
+        <img src="UC_west_park_Logo-PNG.png" alt="UC Westpark" onerror="this.parentElement.innerHTML='<span class=profile-logo-corner-text>UC Westpark</span>'">
       </div>
       <div class="profile-photo-wrap">${photoHTML}</div>
       <div class="profile-meta">
@@ -535,7 +535,7 @@ function viewProfile(id) {
       </div>
       <div class="profile-section" style="background:#F5F8FF;border-radius:0 0 16px 16px">
         <div style="display:flex;align-items:center;gap:12px">
-          <img src="logo.png" style="height:28px;object-fit:contain;background:white;border-radius:6px;padding:2px 6px;" onerror="this.outerHTML='<div style=background:var(--blue);color:white;width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900>UCW</div>'">
+          <img src="UC_west_park_Logo-PNG.png" style="height:28px;object-fit:contain;background:white;border-radius:6px;padding:2px 6px;" onerror="this.outerHTML='<div style=background:var(--blue);color:white;width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900>UCW</div>'">
           <div>
             <div style="font-size:13px;font-weight:700;color:var(--blue);font-family:'Libre Baskerville',serif">UC Westpark</div>
             <div style="font-size:11px;color:var(--text-muted)">www.ucwestpark.com · info@ucwestpark.com</div>
@@ -619,7 +619,7 @@ function drawStyledQR(canvas, url) {
   const img=new Image();
   img.onload=()=>ctx.drawImage(img,lx,ly,ls,ls);
   img.onerror=()=>{const fb=new Image();fb.onload=()=>ctx.drawImage(fb,lx,ly,ls,ls);fb.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(UCW_LOGO_SVG);};
-  img.src='logo.png';
+  img.src='UC_west_park_Logo-PNG.png';
 }
 function openQR(id) {
   const s=staff.find(x=>x.id===id); if(!s) return;
