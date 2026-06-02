@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Profile — UC Westpark</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
+@keyframes spin{to{transform:rotate(360deg)}}
+:root{
+  --blue:#2B5BAD;--blue-mid:#1E4A8F;--blue-light:#EEF3FF;
+  --blue-accent:#3B6EC5;
+  --gold:#E8A830;--gold-mid:#C98A1A;--gold-light:#FFF8E0;
+  --dark:#1A2A4A;--dark-mid:#243558;
+  --ink:#1A2A4A;--ink-mid:#3A4A6A;--ink-muted:#7A8AAA;
+  --border:#D4DDF0;--bg:#F5F8FF;
+  --inactive-bg:#FEF3E2;--inactive-text:#9A6800;
+  --font-heading:'Libre Baskerville',Georgia,serif;
+}
+.top-bar{background:var(--dark);height:58px;display:flex;align-items:center;padding:0 24px;gap:12px;}
+.top-bar-logo{height:36px;max-width:150px;border-radius:8px;overflow:hidden;background:white;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:3px 10px;}
+.top-bar-logo img{width:100%;height:100%;object-fit:contain;}
+.top-bar-name{color:white;font-family:var(--font-heading);font-size:16px;font-weight:700;letter-spacing:0.3px;}
+.page{max-width:680px;margin:0 auto;padding:28px 20px 60px;}
+
+/* Loading */
+.loading-state{text-align:center;padding:60px 24px;}
+.spinner{width:40px;height:40px;border:4px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;}
+.loading-text{font-size:14px;color:var(--ink-muted);}
+
+/* Not found */
+.not-found{text-align:center;padding:60px 24px;}
+.not-found-icon{font-size:56px;margin-bottom:16px;}
+.not-found-title{font-family:var(--font-heading);font-size:22px;font-weight:700;color:var(--ink);margin-bottom:8px;}
+.not-found-sub{font-size:14px;color:var(--ink-muted);}
+
+/* Profile */
+.profile-hero{background:var(--dark);border-radius:16px 16px 0 0;padding:28px 28px 24px;position:relative;overflow:hidden;display:flex;gap:20px;align-items:flex-end;}
+.profile-hero::before{content:'';position:absolute;top:-60px;right:-60px;width:240px;height:240px;border-radius:50%;background:rgba(43,91,173,0.22);}
+.profile-hero::after{content:'';position:absolute;bottom:-40px;left:-30px;width:180px;height:180px;border-radius:50%;background:rgba(232,168,48,0.10);}
+.profile-logo-corner{position:absolute;top:16px;right:20px;display:flex;align-items:center;gap:8px;z-index:1;}
+.profile-logo-corner-img{height:30px;max-width:120px;object-fit:contain;background:white;border-radius:6px;padding:2px 8px;}
+.profile-logo-corner-text{color:rgba(255,255,255,0.85);font-size:13px;font-weight:700;font-family:var(--font-heading);letter-spacing:0.3px;}
+.profile-photo-wrap{width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid rgba(232,168,48,0.6);flex-shrink:0;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;position:relative;z-index:1;}
+.profile-photo-wrap img{width:100%;height:100%;object-fit:cover;object-position:center top;}
+.profile-photo-initials{font-size:30px;font-weight:700;color:white;font-family:var(--font-heading);}
+.profile-meta{flex:1;position:relative;z-index:1;}
+.profile-name{font-size:22px;font-weight:700;color:white;font-family:var(--font-heading);letter-spacing:0.3px;}
+.profile-role{font-size:13px;color:rgba(255,255,255,0.72);margin-top:4px;}
+.profile-status{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;margin-top:10px;}
+.profile-status.active{background:rgba(232,168,48,0.22);color:var(--gold);border:1px solid rgba(232,168,48,0.35);}
+.profile-status.inactive{background:rgba(183,100,28,0.28);color:#ffc87a;}
+.profile-body{background:white;border-radius:0 0 16px 16px;border:1px solid var(--border);border-top:none;}
+.profile-section{padding:20px 24px;border-bottom:1px solid var(--border);}
+.profile-section:last-child{border-bottom:none;}
+.section-label{font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:14px;}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f4fc;}
+.info-row:last-child{border-bottom:none;}
+.info-key{font-size:13px;color:var(--ink-muted);}
+.info-val{font-size:13px;font-weight:700;color:var(--ink);text-align:right;}
+.info-val a{color:var(--blue);text-decoration:none;}
+.info-val a:hover{text-decoration:underline;}
+.bio-text{font-size:14px;color:var(--ink-mid);line-height:1.7;}
+.inactive-banner{background:var(--inactive-bg);border:1px solid #E8A830;padding:14px 20px;margin:16px 24px 0;border-radius:8px;font-size:13px;color:var(--inactive-text);font-weight:600;}
+.footer-brand{background:var(--bg);border-top:1px solid var(--border);padding:18px 24px;border-radius:0 0 16px 16px;display:flex;align-items:center;gap:12px;}
+.footer-brand-logo{height:32px;max-width:120px;object-fit:contain;background:white;border-radius:6px;padding:2px 8px;border:1px solid var(--border);}
+.footer-brand-info{display:flex;flex-direction:column;gap:2px;}
+.footer-brand-name{font-size:13px;font-weight:700;color:var(--blue);font-family:var(--font-heading);}
+.footer-brand-sub{font-size:11px;color:var(--ink-muted);}
+.powered-by{text-align:center;margin-top:28px;font-size:12px;color:var(--ink-muted);}
+.powered-by a{color:var(--blue);font-weight:600;text-decoration:none;}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-bar-logo">
+    <img src="ucw-logo.png" alt="UC Westpark" style="width:100%;height:100%;object-fit:contain;"
+         onerror="this.outerHTML='<span style=font-family:Libre+Baskerville,serif;font-size:12px;font-weight:700;color:#1A2A4A>UCW</span>'">
+  </div>
+  <div class="top-bar-name">UC Westpark</div>
+</div>
+
+<div class="page" id="page-content">
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading profile…</div>
+  </div>
+</div>
+
+<script>
+const { createClient } = supabase;
+const sb = createClient(
+  'https://lamvjvhypgzpthtmzvsf.supabase.co',
+  'sb_publishable_6S_J4hYUXliw3aEc8YCSag_PwW6iaKd'
+);
+
+const COLORS = ['#2B5BAD','#1E4A8F','#C98A1A','#3B6EC5','#1A2A4A','#E8A830','#4A7BC5','#243558'];
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function initials(s){ return ((s.firstname||'?')[0]+(s.lastname||'?')[0]).toUpperCase(); }
+function avatarColor(id){ const n=(id||'').split('').reduce((a,c)=>a+c.charCodeAt(0),0); return COLORS[n%COLORS.length]; }
+function fmtDate(d){ if(!d) return 'N/A'; const[y,m,day]=d.split('-'); return `${day}/${m}/${y}`; }
+
+async function render() {
+  const page = document.getElementById('page-content');
+  const param = new URLSearchParams(window.location.search).get('staff');
+
+  if (!param) {
+    page.innerHTML = `<div class="not-found"><div class="not-found-icon">🔍</div>
+      <div class="not-found-title">No staff specified</div>
+      <div class="not-found-sub">Scan a staff ID card QR code to view a profile.</div></div>`;
+    return;
+  }
+
+  const { data, error } = await sb.from('staff').select('*').eq('id', param).single();
+
+  if (error || !data) {
+    page.innerHTML = `<div class="not-found"><div class="not-found-icon">❓</div>
+      <div class="not-found-title">Staff member not found</div>
+      <div class="not-found-sub">The ID "<strong>${esc(param)}</strong>" doesn't match any current staff record.</div></div>`;
+    return;
+  }
+
+  const s = data;
+  document.title = esc(s.firstname) + ' ' + esc(s.lastname) + ' — UC Westpark';
+
+  const active = s.status === 'active';
+  const ini = initials(s);
+  const col = avatarColor(s.id);
+
+  const photoHTML = s.photo_url
+    ? `<img src="${s.photo_url}" alt="${esc(s.firstname)}" onerror="this.outerHTML='<div class=profile-photo-initials style=background:${col}>${ini}</div>'">`
+    : `<div class="profile-photo-initials" style="background:${col}">${ini}</div>`;
+
+  page.innerHTML = `
+    <div class="profile-hero">
+      <div class="profile-logo-corner">
+        <img class="profile-logo-corner-img" src="ucw-logo.png" alt="UC Westpark"
+             onerror="this.outerHTML='<span class=profile-logo-corner-text>UC Westpark</span>'">
+      </div>
+      <div class="profile-photo-wrap">${photoHTML}</div>
+      <div class="profile-meta">
+        <div class="profile-name">${esc(s.firstname)} ${esc(s.lastname)}</div>
+        <div class="profile-role">${esc(s.role)} · ${esc(s.dept)}</div>
+        <span class="profile-status ${s.status}">
+          <span style="width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block"></span>
+          ${active ? 'Active Employee' : 'No Longer Active'}
+        </span>
+      </div>
+    </div>
+    <div class="profile-body">
+      ${!active ? `<div class="inactive-banner">⚠ This person is no longer an active employee of UC Westpark.</div>` : ''}
+      <div class="profile-section">
+        <div class="section-label">About</div>
+        <p class="bio-text">${esc(s.bio) || 'No bio available.'}</p>
+      </div>
+      <div class="profile-section">
+        <div class="section-label">Details</div>
+        <div class="info-row"><span class="info-key">Employee ID</span><span class="info-val">${esc(s.id)}</span></div>
+        <div class="info-row"><span class="info-key">Department</span><span class="info-val">${esc(s.dept)}</span></div>
+        <div class="info-row"><span class="info-key">Joined</span><span class="info-val">${fmtDate(s.join_date)}</span></div>
+        <div class="info-row"><span class="info-key">Status</span><span class="info-val">${active ? '✅ Active' : '❌ Inactive'}</span></div>
+      </div>
+      <div class="profile-section">
+        <div class="section-label">Contact</div>
+        <div class="info-row"><span class="info-key">Email</span><span class="info-val"><a href="mailto:${esc(s.email)}">${esc(s.email)}</a></span></div>
+        <div class="info-row"><span class="info-key">Phone</span><span class="info-val"><a href="tel:${(s.phone||'').replace(/\s/g,'')}">${esc(s.phone)}</a></span></div>
+      </div>
+      <div class="footer-brand">
+        <img class="footer-brand-logo" src="ucw-logo.png" alt="UC Westpark"
+             onerror="this.outerHTML='<div style=background:white;color:#2B5BAD;padding:3px 8px;border-radius:6px;font-size:12px;font-weight:700;font-family:Libre+Baskerville,serif>UCW</div>'">
+        <div class="footer-brand-info">
+          <div class="footer-brand-name">UC Westpark</div>
+          <div class="footer-brand-sub">www.ucwestpark.com · info@ucwestpark.com</div>
+          <div class="footer-brand-sub" style="margin-top:1px;">UC Westpark, Nigeria</div>
+        </div>
+      </div>
+    </div>
+    <div class="powered-by">Verified staff profile · <a href="https://ucwestpark.com">ucwestpark.com</a></div>`;
+}
+
+render();
+</script>
+</body>
+</html>
