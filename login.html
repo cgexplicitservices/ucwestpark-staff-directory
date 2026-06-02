@@ -557,11 +557,11 @@ async function sendOTP() {
   if (!email || !email.includes('@')) { showErr('step1-error', 'Please enter a valid email address.'); return; }
   const btn = document.getElementById('btn-send-otp');
   setLoading(btn, true, 'Sending code…');
-  const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+  const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
   setLoading(btn, false, 'Send Verification Code →');
   if (error) {
     const msg = error.message || '';
-    showErr('step1-error', msg && msg !== '{}' ? msg : 'Too many attempts — please wait a few minutes.'); return;
+    showErr('step1-error', msg.toLowerCase().includes('not found') ? 'This email is not authorized as an admin.' : msg && msg !== '{}' ? msg : 'Too many attempts — please wait a few minutes.'); return;
   }
   document.getElementById('otp-email-display').textContent = email;
   showStep(2); initOTPBoxes(); startResendTimer();
@@ -573,7 +573,7 @@ async function resendOTP() {
   const btn = document.getElementById('btn-resend');
   btn.disabled = true; btn.textContent = 'Sending…';
   hideMsg('step2-error'); hideMsg('step2-info');
-  const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+  const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
   if (error) { showErr('step2-error', 'Could not resend — please try again.'); btn.disabled = false; btn.innerHTML = 'Resend code'; return; }
   showInfo('step2-info', 'A new code was sent to your email.');
   startResendTimer();
