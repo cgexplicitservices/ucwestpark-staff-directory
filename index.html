@@ -279,7 +279,7 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
       <div class="card-back-sub" id="card-back-sub">One universal back for all staff ID cards.<br>Upload once, download or print anytime.</div>
     </div>
     <div class="card-back-actions">
-      <button class="btn-back btn-back-upload" onclick="document.getElementById('card-back-file-input').click()">⬆ Upload</button>
+      <button class="btn-back btn-back-upload" id="btn-back-upload" onclick="document.getElementById('card-back-file-input').click()">⬆ Upload</button>
       <button class="btn-back btn-back-dl" id="btn-back-dl" onclick="downloadCardBack()" style="opacity:0.45;pointer-events:none">⬇ Download</button>
       <button class="btn-back btn-back-print" id="btn-back-print" onclick="printCardBack()" style="opacity:0.45;pointer-events:none">🖨 Print</button>
     </div>
@@ -550,16 +550,27 @@ async function generateIDCardForCurrentStaff() {
 }
 
 function initCardBack() {
+  const { data } = sb.storage.from('staff-id-cards').getPublicUrl('card-back.png');
+  const url = data.publicUrl + '?t=' + Date.now();
   const img = new Image();
-  img.onload = () => applyCardBack('id-cards/card-back.png');
+  img.onload = () => applyCardBack(data.publicUrl);
   img.onerror = () => {};
-  img.src = 'id-cards/card-back.png';
+  img.src = url;
 }
-function handleCardBackUpload(e) {
+async function handleCardBackUpload(e) {
   const f = e.target.files[0]; if (!f) return;
-  const r = new FileReader();
-  r.onload = ev => applyCardBack(ev.target.result);
-  r.readAsDataURL(f); e.target.value = '';
+  e.target.value = '';
+  const btn = document.getElementById('btn-back-upload');
+  btn.disabled = true; btn.textContent = 'Uploading…';
+  try {
+    const url = await uploadToStorage('staff-id-cards', 'card-back', f);
+    applyCardBack(url);
+    showToast('✓ Card back saved');
+  } catch(err) {
+    showToast('Upload failed: ' + err.message, 5000, true);
+  } finally {
+    btn.disabled = false; btn.textContent = '⬆ Upload';
+  }
 }
 function applyCardBack(src) {
   cardBack = src;
