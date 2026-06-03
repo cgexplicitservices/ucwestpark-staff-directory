@@ -511,7 +511,7 @@ async function generateIDCard(s) {
   // Department — uppercase letter-spaced blue
   ctx.fillStyle='#2B5BAD'; ctx.font='700 13px "Nunito Sans",sans-serif';
   try{ctx.letterSpacing='3px';}catch(e){}
-  ctx.fillText((s.dept||s.role||'').toUpperCase(),W/2,538);
+  ctx.fillText((s.role||s.dept||'').toUpperCase(),W/2,538);
   try{ctx.letterSpacing='0px';}catch(e){}
 
   // QR code
