@@ -634,7 +634,7 @@ function drawStyledQR(canvas, url) {
     img.onerror=()=>{const fb=new Image();fb.onload=()=>ctx.drawImage(fb,lx,ly,ls,ls);fb.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(UCW_LOGO_SVG);};
     img.src=src;
   }
-  drawLogoNoWhite('UC WestPARK.png');
+  drawLogoNoWhite('UC WestPARK.jpg');
 }
 function openQR(id) {
   const s=staff.find(x=>x.id===id); if(!s) return;
