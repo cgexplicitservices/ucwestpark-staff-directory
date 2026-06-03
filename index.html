@@ -615,11 +615,26 @@ function drawStyledQR(canvas, url) {
     ctx.fillStyle='#E8A830';fillRR(ctx,x+cell*2,y+cell*2,sz-cell*4,sz-cell*4,cr*0.35);
   });
   const ls=S*0.19,lx=(S-ls)/2,ly=(S-ls)/2;
-  ctx.fillStyle='#fff'; fillRR(ctx,lx-10,ly-10,ls+20,ls+20,14);
-  const img=new Image();
-  img.onload=()=>ctx.drawImage(img,lx,ly,ls,ls);
-  img.onerror=()=>{const fb=new Image();fb.onload=()=>ctx.drawImage(fb,lx,ly,ls,ls);fb.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(UCW_LOGO_SVG);};
-  img.src='UC_west_park_Logo-PNG.png';
+  ctx.fillStyle='#fff'; fillRR(ctx,lx-8,ly-8,ls+16,ls+16,12);
+  function drawLogoNoWhite(src){
+    const img=new Image();
+    img.crossOrigin='anonymous';
+    img.onload=()=>{
+      const tmp=document.createElement('canvas');
+      tmp.width=img.width;tmp.height=img.height;
+      const tctx=tmp.getContext('2d');
+      tctx.drawImage(img,0,0);
+      const d=tctx.getImageData(0,0,tmp.width,tmp.height);
+      for(let i=0;i<d.data.length;i+=4){
+        if(d.data[i]>220&&d.data[i+1]>220&&d.data[i+2]>220) d.data[i+3]=0;
+      }
+      tctx.putImageData(d,0,0);
+      ctx.drawImage(tmp,lx,ly,ls,ls);
+    };
+    img.onerror=()=>{const fb=new Image();fb.onload=()=>ctx.drawImage(fb,lx,ly,ls,ls);fb.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(UCW_LOGO_SVG);};
+    img.src=src;
+  }
+  drawLogoNoWhite('UC WestPARK.png');
 }
 function openQR(id) {
   const s=staff.find(x=>x.id===id); if(!s) return;
