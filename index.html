@@ -324,7 +324,8 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
     <div class="id-modal-role" id="id-modal-role"></div>
     <div id="id-card-display"></div>
     <div class="id-card-actions">
-      <button class="btn-id-action btn-upload-card" onclick="document.getElementById('id-card-file-input').click()">⬆ Upload Card</button>
+      <button class="btn-id-action btn-upload-card" id="btn-generate-id" onclick="generateIDCardForCurrentStaff()" style="background:var(--blue);color:white;border-color:var(--blue);">⚡ Generate</button>
+      <button class="btn-id-action btn-upload-card" onclick="document.getElementById('id-card-file-input').click()">⬆ Upload</button>
       <button class="btn-id-action btn-download-card" id="btn-download-id" onclick="downloadIDCard()">⬇ Download</button>
       <button class="btn-id-action btn-print-card" onclick="window.print()">🖨 Print</button>
       <button class="btn-id-action btn-close-card" onclick="closeModal('id-modal')">✕ Close</button>
@@ -415,6 +416,137 @@ async function uploadToStorage(bucket, path, file) {
   if (error) throw error;
   const { data } = sb.storage.from(bucket).getPublicUrl(fullPath);
   return data.publicUrl;
+}
+
+/* ── ID CARD GENERATOR ── */
+function loadImg(src, cx) {
+  return new Promise(res => { const img=new Image(); if(cx)img.crossOrigin=cx; img.onload=()=>res(img); img.onerror=()=>res(null); img.src=src; });
+}
+function stripWhiteBg(img) {
+  const c=document.createElement('canvas'); c.width=img.width; c.height=img.height;
+  const x=c.getContext('2d'); x.drawImage(img,0,0);
+  const d=x.getImageData(0,0,c.width,c.height);
+  for(let i=0;i<d.data.length;i+=4){if(d.data[i]>220&&d.data[i+1]>220&&d.data[i+2]>220)d.data[i+3]=0;}
+  x.putImageData(d,0,0); return c;
+}
+async function drawQRBlock(ctx, url, bx, by, bsize) {
+  const qr=qrcode(0,'H'); qr.addData(url); qr.make();
+  const mc=qr.getModuleCount(), pad=2, cell=bsize/(mc+pad*2);
+  ctx.fillStyle='#fff'; ctx.fillRect(bx,by,bsize,bsize);
+  ctx.fillStyle='#1A2A4A'; const dr=cell*0.42;
+  function isF(r,c){return(r<7&&c<7)||(r<7&&c>=mc-7)||(r>=mc-7&&c<7);}
+  for(let r=0;r<mc;r++) for(let c=0;c<mc;c++){
+    if(isF(r,c))continue;
+    if(qr.isDark(r,c)){const cx=bx+(c+pad+0.5)*cell,cy=by+(r+pad+0.5)*cell;ctx.beginPath();ctx.arc(cx,cy,dr,0,Math.PI*2);ctx.fill();}
+  }
+  [{r:0,c:0},{r:0,c:mc-7},{r:mc-7,c:0}].forEach(({r,c})=>{
+    const fx=bx+(c+pad)*cell,fy=by+(r+pad)*cell,sz=7*cell,cr=cell*1.1;
+    ctx.fillStyle='#2B5BAD';fillRR(ctx,fx,fy,sz,sz,cr);
+    ctx.fillStyle='#fff';fillRR(ctx,fx+cell,fy+cell,sz-cell*2,sz-cell*2,cr*0.55);
+    ctx.fillStyle='#E8A830';fillRR(ctx,fx+cell*2,fy+cell*2,sz-cell*4,sz-cell*4,cr*0.35);
+  });
+  const ls=bsize*0.2,lx=bx+(bsize-ls)/2,ly=by+(bsize-ls)/2;
+  ctx.fillStyle='#fff'; fillRR(ctx,lx-5,ly-5,ls+10,ls+10,8);
+  const li=await loadImg('UC WestPARK.jpg','anonymous');
+  if(li){ctx.drawImage(stripWhiteBg(li),lx,ly,ls,ls);}
+}
+function drawInitialsCircle(ctx,cx,cy,r,s){
+  ctx.fillStyle='#3B6EC5'; ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='white'; ctx.font=`bold ${Math.round(r*0.55)}px "Nunito Sans",sans-serif`;
+  ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(initials(s),cx,cy); ctx.textBaseline='alphabetic';
+}
+async function generateIDCard(s) {
+  await document.fonts.ready;
+  const W=560,H=900; const cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+
+  // White background
+  ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
+
+  // Gold wave — bottom-left
+  ctx.fillStyle='#E8A830'; ctx.beginPath();
+  ctx.moveTo(0,H); ctx.lineTo(330,H);
+  ctx.bezierCurveTo(255,H, 20,H-65, 115,H-165);
+  ctx.bezierCurveTo(195,H-248, 0,H-252, 0,H-340);
+  ctx.closePath(); ctx.fill();
+
+  // Blue wave — top-right
+  ctx.fillStyle='#2B5BAD'; ctx.beginPath();
+  ctx.moveTo(W,0); ctx.lineTo(230,0);
+  ctx.bezierCurveTo(305,0, W-20,65, W-115,165);
+  ctx.bezierCurveTo(W-195,248, W,252, W,340);
+  ctx.lineTo(W,0); ctx.closePath(); ctx.fill();
+
+  // Logo: icon + UCwestpark text centered
+  const iconImg=await loadImg('UC WestPARK.jpg','anonymous');
+  const iH=48,iW=48;
+  ctx.font='bold 30px "Nunito Sans",sans-serif';
+  const tW=ctx.measureText('UCwestpark').width;
+  const logoTotalW=iW+10+tW, logoX=(W-logoTotalW)/2, logoY=58;
+  if(iconImg){ctx.drawImage(stripWhiteBg(iconImg),logoX,logoY,iW,iH);}
+  ctx.fillStyle='#1A2A4A'; ctx.font='bold 30px "Nunito Sans",sans-serif';
+  ctx.textAlign='left'; ctx.textBaseline='middle';
+  ctx.fillText('UCwestpark',logoX+iW+10,logoY+iH/2); ctx.textBaseline='alphabetic';
+
+  // Photo circle with blue ring
+  const pR=126,pCX=W/2,pCY=308;
+  ctx.fillStyle='#2B5BAD'; ctx.beginPath(); ctx.arc(pCX,pCY,pR+9,0,Math.PI*2); ctx.fill();
+  if(s.photo_url){
+    const photo=await loadImg(s.photo_url,'anonymous');
+    if(photo){
+      ctx.save(); ctx.beginPath(); ctx.arc(pCX,pCY,pR,0,Math.PI*2); ctx.clip();
+      const sc=Math.max(pR*2/photo.width,pR*2/photo.height);
+      ctx.drawImage(photo,pCX-photo.width*sc/2,pCY-photo.height*sc/2,photo.width*sc,photo.height*sc);
+      ctx.restore();
+    } else { drawInitialsCircle(ctx,pCX,pCY,pR,s); }
+  } else { drawInitialsCircle(ctx,pCX,pCY,pR,s); }
+
+  // Name — scale down if too long
+  ctx.textAlign='center'; ctx.fillStyle='#1A2A4A';
+  let nfs=36; const fullName=s.firstname+' '+s.lastname;
+  ctx.font=`bold ${nfs}px "Nunito Sans",sans-serif`;
+  while(ctx.measureText(fullName).width>W-80&&nfs>20){nfs-=2;ctx.font=`bold ${nfs}px "Nunito Sans",sans-serif`;}
+  ctx.fillText(fullName,W/2,497);
+
+  // Department — uppercase letter-spaced blue
+  ctx.fillStyle='#2B5BAD'; ctx.font='700 13px "Nunito Sans",sans-serif';
+  try{ctx.letterSpacing='3px';}catch(e){}
+  ctx.fillText((s.dept||s.role||'').toUpperCase(),W/2,538);
+  try{ctx.letterSpacing='0px';}catch(e){}
+
+  // QR code
+  const qrSize=168; await drawQRBlock(ctx,staffURL(s),(W-qrSize)/2,566,qrSize);
+
+  // Divider line
+  ctx.strokeStyle='#2B5BAD'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(W/2-110,788); ctx.lineTo(W/2+110,788); ctx.stroke();
+
+  // Website
+  ctx.fillStyle='#1A2A4A'; ctx.font='500 14px "Nunito Sans",sans-serif';
+  ctx.textAlign='center'; ctx.fillText('www.ucwestpark.com',W/2,830);
+
+  return cv;
+}
+async function autoGenerateAndSaveIDCard(s) {
+  try {
+    const cv=await generateIDCard(s);
+    const blob=await new Promise(res=>cv.toBlob(res,'image/png'));
+    const file=new File([blob],s.id+'-card.png',{type:'image/png'});
+    const url=await uploadToStorage('staff-id-cards',s.id+'-card',file);
+    await sb.from('staff').update({id_card_url:url}).eq('id',s.id);
+    const idx=staff.findIndex(x=>x.id===s.id);
+    if(idx>=0){staff[idx].id_card_url=url; staff[idx]._cacheBust=Date.now();}
+    return url;
+  } catch(e){console.error('ID card gen failed:',e); return null;}
+}
+async function generateIDCardForCurrentStaff() {
+  if(!currentIDStaff) return;
+  const btn=document.getElementById('btn-generate-id');
+  btn.disabled=true; btn.textContent='⏳ Generating…';
+  const url=await autoGenerateAndSaveIDCard(currentIDStaff);
+  btn.disabled=false; btn.textContent='⚡ Generate';
+  if(url){currentIDStaff.id_card_url=url; refreshIDCardDisplay(); renderCards(); showToast('✓ ID card generated');}
+  else{showToast('Generation failed — check photo and try again',5000,true);}
 }
 
 function initCardBack() {
@@ -722,6 +854,11 @@ async function saveStaff() {
     updateStats(); renderCards();
     showToast(isEdit?'✓ Staff updated':'✓ Staff added');
     if(isEdit&&document.getElementById('view-profile').classList.contains('active')) viewProfile(empid);
+    if(record.photo_url){
+      const savedRecord={id:empid,...record};
+      setTimeout(()=>showToast('Generating ID card…',4000),800);
+      autoGenerateAndSaveIDCard(savedRecord).then(url=>{if(url){updateStats();renderCards();showToast('✓ ID card auto-generated');}});
+    }
   } catch(err){showToast('Error: '+err.message,5000,true);}
   finally{btn.disabled=false;btn.textContent=editingStaffId?'Save Changes':'Save Staff Member';}
 }
