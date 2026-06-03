@@ -373,6 +373,21 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
   </div>
 </div>
 
+<!-- PHOTO CROP MODAL -->
+<div id="crop-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:10000;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:20px;padding:28px 24px;width:300px;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,0.3);">
+    <div style="font-family:'Libre Baskerville',serif;font-size:16px;font-weight:700;color:#1A2A4A;margin-bottom:4px;">Position Photo</div>
+    <div style="font-size:12px;color:#7A8AAA;margin-bottom:18px;">Drag to center the face in the circle</div>
+    <div id="crop-viewport" style="width:220px;height:220px;border-radius:50%;overflow:hidden;border:4px solid #2B5BAD;margin:0 auto 20px;position:relative;cursor:grab;touch-action:none;background:#EEF3FF;flex-shrink:0;">
+      <img id="crop-img" style="position:absolute;user-select:none;pointer-events:none;" draggable="false">
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button id="btn-crop-confirm" onclick="confirmCrop()" style="flex:1;background:#2B5BAD;color:white;border:none;padding:11px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Nunito Sans',sans-serif;">Use Photo ✓</button>
+      <button onclick="cancelCrop()" style="flex:1;background:#f0f4fc;color:#1A2A4A;border:none;padding:11px;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Nunito Sans',sans-serif;">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast" aria-live="polite"></div>
 
 <script>
@@ -795,13 +810,76 @@ function downloadQR() {
   a.href=canvas.toDataURL('image/png'); a.click();
 }
 
+/* ── PHOTO CROP ── */
+let _cropImgEl, _cropVP, _cropOX=0, _cropOY=0, _cropScale=1, _cropDrag=false, _cropSX=0, _cropSY=0, _cropBaseX=0, _cropBaseY=0;
+
 function handlePhotoUpload(e) {
   const f=e.target.files[0]; if(!f) return;
-  if(f.size>5*1024*1024){showToast('Photo too large. Max 5MB.',3000,true);e.target.value='';return;}
-  pendingPhotoFile=f;
-  const r=new FileReader();
-  r.onload=ev=>{document.getElementById('photo-placeholder').innerHTML=`<img src="${ev.target.result}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;border:2px solid var(--border)"><div class="upload-hint" style="color:var(--blue);font-weight:600">Ready ✓</div>`;};
-  r.readAsDataURL(f);
+  e.target.value='';
+  if(f.size>5*1024*1024){showToast('Photo too large. Max 5MB.',3000,true);return;}
+  const reader=new FileReader();
+  reader.onload=ev=>openCropModal(ev.target.result, f);
+  reader.readAsDataURL(f);
+}
+
+function openCropModal(dataUrl, originalFile) {
+  const modal=document.getElementById('crop-modal');
+  _cropVP=document.getElementById('crop-viewport');
+  _cropImgEl=document.getElementById('crop-img');
+  modal._originalFile=originalFile;
+  modal.style.display='flex';
+  _cropImgEl.onload=()=>{
+    const vSize=220, nat=_cropImgEl;
+    _cropScale=Math.max(vSize/nat.naturalWidth, vSize/nat.naturalHeight)*1.05;
+    const sw=nat.naturalWidth*_cropScale, sh=nat.naturalHeight*_cropScale;
+    _cropOX=(vSize-sw)/2;
+    // default: show upper 45% of image (face area for most portraits)
+    _cropOY=Math.min(0, Math.max(vSize-sh, -(sh-vSize)*0.35));
+    _applyCrop();
+  };
+  _cropImgEl.src=dataUrl;
+  _cropVP.onmousedown=_cropStart; _cropVP.ontouchstart=_cropStart;
+  document.onmousemove=_cropMove; document.ontouchmove=_cropMove;
+  document.onmouseup=_cropEnd; document.ontouchend=_cropEnd;
+}
+
+function _cropStart(e){
+  _cropDrag=true; _cropVP.style.cursor='grabbing';
+  const p=e.touches?e.touches[0]:e;
+  _cropSX=p.clientX; _cropSY=p.clientY; _cropBaseX=_cropOX; _cropBaseY=_cropOY;
+  e.preventDefault();
+}
+function _cropMove(e){
+  if(!_cropDrag)return;
+  const p=e.touches?e.touches[0]:e;
+  const dx=p.clientX-_cropSX, dy=p.clientY-_cropSY;
+  const vSize=220, sw=_cropImgEl.naturalWidth*_cropScale, sh=_cropImgEl.naturalHeight*_cropScale;
+  _cropOX=Math.min(0,Math.max(vSize-sw,_cropBaseX+dx));
+  _cropOY=Math.min(0,Math.max(vSize-sh,_cropBaseY+dy));
+  _applyCrop(); e.preventDefault();
+}
+function _cropEnd(){_cropDrag=false; if(_cropVP)_cropVP.style.cursor='grab';}
+function _applyCrop(){
+  const sw=_cropImgEl.naturalWidth*_cropScale, sh=_cropImgEl.naturalHeight*_cropScale;
+  _cropImgEl.style.cssText=`position:absolute;user-select:none;pointer-events:none;width:${sw}px;height:${sh}px;left:${_cropOX}px;top:${_cropOY}px;`;
+}
+
+function confirmCrop() {
+  const vSize=220;
+  const cv=document.createElement('canvas'); cv.width=vSize; cv.height=vSize;
+  const ctx=cv.getContext('2d');
+  ctx.beginPath(); ctx.arc(vSize/2,vSize/2,vSize/2,0,Math.PI*2); ctx.clip();
+  ctx.drawImage(_cropImgEl,_cropOX,_cropOY,_cropImgEl.naturalWidth*_cropScale,_cropImgEl.naturalHeight*_cropScale);
+  cv.toBlob(blob=>{
+    const file=new File([blob],'photo.png',{type:'image/png'});
+    pendingPhotoFile=file;
+    document.getElementById('photo-placeholder').innerHTML=`<img src="${cv.toDataURL()}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--blue)"><div class="upload-hint" style="color:var(--blue);font-weight:600">Ready ✓</div>`;
+    cancelCrop();
+  },'image/png');
+}
+function cancelCrop(){
+  document.getElementById('crop-modal').style.display='none';
+  document.onmousemove=null; document.ontouchmove=null; document.onmouseup=null; document.ontouchend=null;
 }
 function handleIDCardAddUpload(e) {
   const f=e.target.files[0]; if(!f) return;
