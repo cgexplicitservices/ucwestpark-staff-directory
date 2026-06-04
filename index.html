@@ -54,7 +54,7 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
 .staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
 
 /* ── STAFF CARD ── */
-.staff-card{background:white;border-radius:16px;overflow:hidden;position:relative;box-shadow:0 1px 3px rgba(26,42,74,0.06),0 4px 16px rgba(26,42,74,0.08);transition:transform 180ms cubic-bezier(0.25,1,0.5,1),box-shadow 180ms cubic-bezier(0.25,1,0.5,1);}
+.staff-card{background:white;border-radius:16px;overflow:hidden;position:relative;box-shadow:0 1px 3px rgba(26,42,74,0.06),0 4px 16px rgba(26,42,74,0.08);transition:transform 180ms cubic-bezier(0.25,1,0.5,1),box-shadow 180ms cubic-bezier(0.25,1,0.5,1);display:flex;flex-direction:column;}
 .staff-card:hover{transform:translateY(-4px);box-shadow:0 2px 8px rgba(26,42,74,0.1),0 16px 40px rgba(43,91,173,0.18);}
 .card-header{height:96px;background:linear-gradient(140deg,#1A2A4A 0%,#2B5BAD 100%);position:relative;flex-shrink:0;}
 .card-header::after{content:'';position:absolute;top:-50px;right:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(59,110,197,0.55) 0%,transparent 70%);pointer-events:none;}
@@ -63,8 +63,8 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
 .card-avatar-initials{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:white;font-family:var(--font-heading);}
 .status-pip{position:absolute;top:11px;right:11px;width:9px;height:9px;border-radius:50%;border:2px solid rgba(255,255,255,0.65);z-index:1;}
 .status-pip.active{background:#69f0ae;}.status-pip.inactive{background:#ef5350;}
-.card-body{padding:54px 16px 14px;text-align:center;}
-.card-name{font-family:var(--font-heading);font-size:15px;font-weight:700;color:var(--dark);line-height:1.3;margin-bottom:4px;text-wrap:balance;}
+.card-body{padding:54px 16px 14px;text-align:center;flex:1;}
+.card-name{font-family:var(--font-heading);font-size:15px;font-weight:700;color:var(--dark);line-height:1.3;margin-bottom:4px;text-wrap:balance;min-height:2.6em;display:flex;align-items:flex-start;justify-content:center;}
 .card-role{font-size:12px;color:var(--text-muted);margin-bottom:9px;line-height:1.35;}
 .card-dept{display:inline-block;background:var(--blue-light);color:var(--blue);font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;letter-spacing:0.2px;}
 .card-sep{height:1px;background:var(--border);margin:14px 0 0;}
