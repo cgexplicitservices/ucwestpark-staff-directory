@@ -629,8 +629,9 @@ function renderCards() {
   if (!list.length) { grid.innerHTML='<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:40px">No staff found.</p>'; return; }
   grid.innerHTML = list.map(s => {
     const ini=initials(s), col=avatarColor(s.id);
-    const photoHTML = s.photo_url
-      ? `<img src="${s.photo_url}" alt="${esc(s.firstname)}" onerror="this.outerHTML='<div class=card-photo-initials style=background:${col}>${ini}</div>'">`
+    const photoSrc = s.photo_url ? s.photo_url+(s._cacheBust?'?t='+s._cacheBust:'') : null;
+    const photoHTML = photoSrc
+      ? `<img src="${photoSrc}" alt="${esc(s.firstname)}" onerror="this.outerHTML='<div class=card-photo-initials style=background:${col}>${ini}</div>'">`
       : `<div class="card-photo-initials" style="background:${col}">${ini}</div>`;
     return `<div class="staff-card">
       <div class="card-photo-area">${photoHTML}
@@ -656,8 +657,9 @@ function viewProfile(id) {
   const s = staff.find(x=>x.id===id); if (!s) return;
   const active = s.status==='active';
   const ini = initials(s);
-  const photoHTML = s.photo_url
-    ? `<img src="${s.photo_url}" onerror="this.outerHTML='<div class=profile-photo-initials>${ini}</div>'">`
+  const _psrc = s.photo_url ? s.photo_url+(s._cacheBust?'?t='+s._cacheBust:'') : null;
+  const photoHTML = _psrc
+    ? `<img src="${_psrc}" onerror="this.outerHTML='<div class=profile-photo-initials>${ini}</div>'">`
     : `<div class="profile-photo-initials">${ini}</div>`;
   document.getElementById('profile-edit-btn').onclick = () => editStaff(s.id);
   document.getElementById('profile-delete-btn').onclick = () => deleteStaff(s.id);
@@ -936,8 +938,9 @@ async function saveStaff() {
     if(pendingPhotoFile) photo_url=await uploadToStorage('staff-photos',empid,pendingPhotoFile);
     if(pendingIDCardFile) id_card_url=await uploadToStorage('staff-id-cards',empid+'-card',pendingIDCardFile);
     const record={firstname:fn,lastname:ln,role:document.getElementById('f-role').value.trim()||'Staff',dept:document.getElementById('f-dept').value.trim()||'General',email:document.getElementById('f-email').value.trim(),phone:document.getElementById('f-phone').value.trim(),join_date:document.getElementById('f-join').value||null,status:document.getElementById('f-status').value,bio:document.getElementById('f-bio').value.trim(),photo_url,id_card_url};
-    if(isEdit){const{error}=await sb.from('staff').update(record).eq('id',empid);if(error)throw error;const idx=staff.findIndex(x=>x.id===empid);if(idx>=0)staff[idx]={...staff[idx],...record};}
-    else{const{error}=await sb.from('staff').insert({id:empid,...record});if(error)throw error;staff.push({id:empid,...record});}
+    const bust=Date.now();
+    if(isEdit){const{error}=await sb.from('staff').update(record).eq('id',empid);if(error)throw error;const idx=staff.findIndex(x=>x.id===empid);if(idx>=0)staff[idx]={...staff[idx],...record,_cacheBust:bust};}
+    else{const{error}=await sb.from('staff').insert({id:empid,...record});if(error)throw error;staff.push({id:empid,...record,_cacheBust:bust});}
     closeModal('add-modal');
     editingStaffId=null; pendingPhotoFile=null; pendingIDCardFile=null;
     updateStats(); renderCards();
