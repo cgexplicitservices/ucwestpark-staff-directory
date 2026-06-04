@@ -41,8 +41,9 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
 .dash-wrap{max-width:960px;margin:0 auto;padding:24px 20px;}
 .dash-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
 .dash-title{font-size:20px;font-weight:700;color:var(--text-dark);font-family:var(--font-heading);}
-.btn-add{background:var(--blue);color:white;border:none;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body);}
-.btn-add:hover{background:var(--blue-mid);}
+.btn-add{background:var(--blue);color:white;border:none;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font-body);box-shadow:0 4px 14px rgba(43,91,173,0.32);display:inline-flex;align-items:center;gap:7px;letter-spacing:0.2px;transition:background 0.15s,transform 0.1s,box-shadow 0.15s;}
+.btn-add:hover{background:var(--blue-mid);transform:translateY(-1px);box-shadow:0 6px 22px rgba(43,91,173,0.44);}
+.btn-add:active{transform:translateY(0);box-shadow:0 2px 8px rgba(43,91,173,0.28);}
 .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
 .stat-card{background:white;border-radius:10px;padding:14px 18px;border:1px solid var(--border);}
 .stat-label{font-size:11px;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;}
@@ -53,29 +54,32 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
 .staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
 
 /* ── STAFF CARD ── */
-.staff-card{background:white;border-radius:14px;border:1px solid var(--border);overflow:hidden;transition:all 0.2s;}
-.staff-card:hover{border-color:var(--blue-accent);box-shadow:0 6px 20px rgba(43,91,173,0.12);transform:translateY(-2px);}
-.card-photo-area{height:180px;background:linear-gradient(160deg,#1A2A4A,#2B5BAD);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
-.card-photo-area img{width:100%;height:100%;object-fit:cover;object-position:center top;}
-.card-photo-initials{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:white;border:3px solid rgba(255,255,255,0.4);}
-.status-pip{position:absolute;top:10px;right:10px;width:10px;height:10px;border-radius:50%;border:2px solid white;}
+.staff-card{background:white;border-radius:16px;overflow:hidden;position:relative;box-shadow:0 1px 3px rgba(26,42,74,0.06),0 4px 16px rgba(26,42,74,0.08);transition:transform 180ms cubic-bezier(0.25,1,0.5,1),box-shadow 180ms cubic-bezier(0.25,1,0.5,1);}
+.staff-card:hover{transform:translateY(-4px);box-shadow:0 2px 8px rgba(26,42,74,0.1),0 16px 40px rgba(43,91,173,0.18);}
+.card-header{height:96px;background:linear-gradient(140deg,#1A2A4A 0%,#2B5BAD 100%);position:relative;flex-shrink:0;}
+.card-header::after{content:'';position:absolute;top:-50px;right:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(59,110,197,0.55) 0%,transparent 70%);pointer-events:none;}
+.card-avatar-wrap{position:absolute;bottom:-44px;left:50%;transform:translateX(-50%);width:88px;height:88px;border-radius:50%;background:white;border:3px solid #E8A830;overflow:hidden;box-shadow:0 4px 14px rgba(26,42,74,0.22);z-index:2;}
+.card-avatar-wrap img{width:100%;height:100%;object-fit:cover;object-position:center top;}
+.card-avatar-initials{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:white;font-family:var(--font-heading);}
+.status-pip{position:absolute;top:11px;right:11px;width:9px;height:9px;border-radius:50%;border:2px solid rgba(255,255,255,0.65);z-index:1;}
 .status-pip.active{background:#69f0ae;}.status-pip.inactive{background:#ef5350;}
-.card-info{padding:12px 14px 8px;}
-.card-name{font-weight:700;font-size:14px;color:var(--text-dark);font-family:var(--font-heading);}
-.card-role{font-size:12px;color:var(--text-muted);margin-top:2px;}
-.card-dept{display:inline-block;background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;margin-top:6px;}
-.card-actions{display:flex;gap:6px;padding:0 14px 14px;}
-.btn-sm{flex:1;padding:7px 4px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid;transition:all 0.15s;text-align:center;font-family:var(--font-body);}
-.btn-view{background:var(--blue-light);color:var(--blue);border-color:#C4D4F0;}
-.btn-view:hover{background:#C4D4F0;}
-.btn-qr{background:var(--gold-light);color:var(--gold-mid);border-color:#FFE89A;}
-.btn-qr:hover{background:#FFE89A;}
-.btn-id{background:#e3f2fd;color:#0277bd;border-color:#bbdefb;}
-.btn-id:hover{background:#bbdefb;}
-.btn-edit{background:#f3e5f5;color:#6a1b9a;border-color:#e1bee7;flex:0 0 auto;padding:7px 10px;}
-.btn-edit:hover{background:#e1bee7;}
-.btn-delete{background:#fde8e8;color:#b71c1c;border-color:#ffcdd2;flex:0 0 auto;padding:7px 10px;}
-.btn-delete:hover{background:#ffcdd2;}
+.card-body{padding:54px 16px 14px;text-align:center;}
+.card-name{font-family:var(--font-heading);font-size:15px;font-weight:700;color:var(--dark);line-height:1.3;margin-bottom:4px;text-wrap:balance;}
+.card-role{font-size:12px;color:var(--text-muted);margin-bottom:9px;line-height:1.35;}
+.card-dept{display:inline-block;background:var(--blue-light);color:var(--blue);font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;letter-spacing:0.2px;}
+.card-sep{height:1px;background:var(--border);margin:14px 0 0;}
+.card-action-row{display:grid;grid-template-columns:repeat(5,1fr);}
+.card-act{display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 2px 8px;background:none;border:none;cursor:pointer;border-radius:0;transition:background 120ms ease-out;font-family:var(--font-body);}
+.card-act:hover{background:var(--blue-light);}
+.card-act.act-del:hover{background:#fde8e8;}
+.card-act:first-child{border-radius:0 0 0 16px;}.card-act:last-child{border-radius:0 0 16px 0;}
+.ca-icon{font-size:14px;line-height:1;display:block;}
+.ca-label{font-size:9px;font-weight:700;color:var(--text-muted);line-height:1;display:block;}
+.card-act:hover .ca-label{color:var(--blue);}
+.card-act.act-del:hover .ca-label{color:#b71c1c;}
+@keyframes card-in{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.staff-card{animation:card-in 0.28s cubic-bezier(0.25,1,0.5,1) both;}
+@media(prefers-reduced-motion:reduce){.staff-card,.card-act{transition:none;animation:none;}}
 
 /* ── PROFILE VIEW ── */
 .profile-wrap{max-width:680px;margin:0 auto;padding:24px 20px;}
@@ -207,7 +211,8 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
   .dash-wrap{padding:16px 12px;}
   .stats-row{grid-template-columns:1fr;gap:8px;}
   .staff-grid{grid-template-columns:1fr 1fr;gap:10px;}
-  .card-actions{flex-wrap:wrap;}
+  .card-body{padding:52px 12px 12px;}
+  .card-name{font-size:14px;}
   .modal-box{width:96%!important;max-width:100%!important;padding:20px 16px!important;max-height:92vh;overflow-y:auto;}
   .form-grid{grid-template-columns:1fr!important;}
   .profile-hero{flex-direction:column;align-items:center;text-align:center;padding:20px;}
@@ -257,7 +262,7 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
 <div class="dash-wrap">
   <div class="dash-header">
     <div class="dash-title">Team Directory</div>
-    <button class="btn-add" onclick="openAddModal()">+ Add Staff</button>
+    <button class="btn-add" onclick="openAddModal()"><span style="font-size:17px;line-height:1;font-weight:400">+</span> Add Staff</button>
   </div>
   <div class="stats-row">
     <div class="stat-card"><div class="stat-label">Total Staff</div><div class="stat-num" id="stat-total">—</div></div>
@@ -630,24 +635,36 @@ function renderCards() {
   grid.innerHTML = list.map(s => {
     const ini=initials(s), col=avatarColor(s.id);
     const photoSrc = s.photo_url ? s.photo_url+(s._cacheBust?'?t='+s._cacheBust:'') : null;
-    const photoHTML = photoSrc
-      ? `<img src="${photoSrc}" alt="${esc(s.firstname)}" onerror="this.outerHTML='<div class=card-photo-initials style=background:${col}>${ini}</div>'">`
-      : `<div class="card-photo-initials" style="background:${col}">${ini}</div>`;
+    const avatarInner = photoSrc
+      ? `<img src="${photoSrc}" alt="${esc(s.firstname)}" onerror="this.outerHTML='<div class=card-avatar-initials style=background:${col}>${ini}</div>'">`
+      : `<div class="card-avatar-initials" style="background:${col}">${ini}</div>`;
     return `<div class="staff-card">
-      <div class="card-photo-area">${photoHTML}
+      <div class="card-header">
         <div class="status-pip ${s.status}" title="${s.status==='active'?'Active':'Inactive'}"><span class="sr-only">${s.status==='active'?'Active':'Inactive'}</span></div>
+        <div class="card-avatar-wrap">${avatarInner}</div>
       </div>
-      <div class="card-info">
+      <div class="card-body">
         <div class="card-name">${esc(s.firstname)} ${esc(s.lastname)}</div>
         <div class="card-role">${esc(s.role)}</div>
         <div class="card-dept">${esc(s.dept)}</div>
       </div>
-      <div class="card-actions">
-        <button class="btn-sm btn-view" onclick="viewProfile('${esc(s.id)}')">Profile</button>
-        <button class="btn-sm btn-qr" onclick="openQR('${esc(s.id)}')">QR</button>
-        <button class="btn-sm btn-id" onclick="openIDCard('${esc(s.id)}')">${s.id_card_url?'ID Card':'+ ID'}</button>
-        <button class="btn-sm btn-edit" onclick="editStaff('${esc(s.id)}')" aria-label="Edit ${esc(s.firstname)} ${esc(s.lastname)}">✎</button>
-        <button class="btn-sm btn-delete" onclick="deleteStaff('${esc(s.id)}')" aria-label="Delete ${esc(s.firstname)} ${esc(s.lastname)}">🗑</button>
+      <div class="card-sep"></div>
+      <div class="card-action-row" role="group" aria-label="${esc(s.firstname)} ${esc(s.lastname)} actions">
+        <button class="card-act" onclick="viewProfile('${esc(s.id)}')" aria-label="View profile">
+          <span class="ca-icon">👤</span><span class="ca-label">Profile</span>
+        </button>
+        <button class="card-act" onclick="openQR('${esc(s.id)}')" aria-label="View QR code">
+          <span class="ca-icon">⬡</span><span class="ca-label">QR</span>
+        </button>
+        <button class="card-act" onclick="openIDCard('${esc(s.id)}')" aria-label="${s.id_card_url?'View':'Generate'} ID card">
+          <span class="ca-icon">🪪</span><span class="ca-label">${s.id_card_url?'ID Card':'+ ID'}</span>
+        </button>
+        <button class="card-act" onclick="editStaff('${esc(s.id)}')" aria-label="Edit staff member">
+          <span class="ca-icon">✏</span><span class="ca-label">Edit</span>
+        </button>
+        <button class="card-act act-del" onclick="deleteStaff('${esc(s.id)}')" aria-label="Delete staff member">
+          <span class="ca-icon">🗑</span><span class="ca-label">Delete</span>
+        </button>
       </div>
     </div>`;
   }).join('');
