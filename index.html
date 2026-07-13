@@ -99,6 +99,10 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
 .profile-action-btn:active{transform:translateY(0);}
 .profile-action-photo{background:var(--blue-light);color:var(--blue);border-color:#c8d8f8;}
 .profile-action-photo:hover{background:#dce8ff;}
+.btn-prev-next{background:white;border:1px solid var(--border);color:var(--blue);padding:6px 14px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font-body);transition:all 0.15s;display:inline-flex;align-items:center;gap:4px;}
+.btn-prev-next:hover{background:var(--blue-light);border-color:var(--blue-accent);}
+.btn-prev-next:disabled{opacity:0.3;cursor:not-allowed;pointer-events:none;}
+.profile-counter{font-size:12px;font-weight:600;color:var(--text-muted);min-width:52px;text-align:center;}
 .profile-action-edit{background:#f3e5f5;color:#6a1b9a;border-color:#e1bee7;}
 .profile-action-edit:hover{background:#e1bee7;}
 .profile-action-del{background:var(--inactive-bg);color:#b71c1c;border-color:#ffcdd2;}
@@ -397,8 +401,21 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
 <!-- PROFILE VIEW -->
 <div id="view-profile" class="view">
 <div class="profile-wrap">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-    <button class="profile-back" onclick="showView('dashboard')">← Back to Directory</button>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <button class="profile-back" onclick="showView('dashboard')">← Back to Directory</button>
+      <div id="profile-preview-nav" style="display:none;align-items:center;gap:6px;">
+        <button class="btn-prev-next" id="btn-prev-staff" onclick="navigateProfile(-1)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Prev
+        </button>
+        <span class="profile-counter" id="profile-counter"></span>
+        <button class="btn-prev-next" id="btn-next-staff" onclick="navigateProfile(1)">
+          Next
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
       <button id="profile-photo-dl-btn" class="profile-action-btn profile-action-photo" onclick="" style="display:none">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -419,6 +436,7 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
 </div>
 
 <!-- MY PROFILE VIEW -->
+
 <div id="view-my-profile" class="view">
 <div class="my-profile-wrap">
   <div class="my-profile-header">
@@ -615,6 +633,7 @@ let staff = [], currentQRStaff = null, currentIDStaff = null;
 let pendingPhotoFile = null, pendingIDCardFile = null, editingStaffId = null;
 let cardBack = 'id-cards/card-back.png', statusFilter = 'all';
 let currentUser = null;
+let previewMode = false, currentProfileId = null;
 
 function setStatusFilter(val) {
   statusFilter = val;
@@ -899,8 +918,10 @@ function renderCards() {
   }).join('');
 }
 
-function viewProfile(id) {
+function viewProfile(id, fromPreview=false) {
   const s = staff.find(x=>x.id===id); if (!s) return;
+  previewMode = fromPreview;
+  currentProfileId = id;
   const active = s.status==='active';
   const ini = initials(s);
   const _psrc = s.photo_url ? s.photo_url+(s._cacheBust?'?t='+s._cacheBust:'') : null;
@@ -957,7 +978,25 @@ function viewProfile(id) {
         </div>
       </div>
     </div>`;
+  const previewNav = document.getElementById('profile-preview-nav');
+  if (fromPreview) {
+    previewNav.style.display = 'flex';
+    const idx = staff.findIndex(x=>x.id===id);
+    document.getElementById('profile-counter').textContent = (idx+1)+' / '+staff.length;
+    document.getElementById('btn-prev-staff').disabled = idx <= 0;
+    document.getElementById('btn-next-staff').disabled = idx >= staff.length-1;
+  } else {
+    previewNav.style.display = 'none';
+  }
   showView('profile');
+}
+
+function navigateProfile(dir) {
+  const idx = staff.findIndex(x=>x.id===currentProfileId);
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= staff.length) return;
+  viewProfile(staff[newIdx].id, true);
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 
 function downloadPhoto(url, filename) {
@@ -1496,7 +1535,7 @@ function showView(name){
     loadActivity();
   } else {
     document.getElementById('view-profile').classList.add('active');tabs[1].classList.add('active');
-    if(name==='profile-demo'&&staff.length)viewProfile(staff[0].id);
+    if(name==='profile-demo'&&staff.length)viewProfile(staff[0].id, true);
   }
 }
 ['qr-modal','id-modal','add-modal'].forEach(id=>{document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeModal(id);});});
