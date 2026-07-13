@@ -129,6 +129,15 @@ async function render() {
   const s = data;
   document.title = esc(s.firstname) + ' ' + esc(s.lastname) + ' — UC Westpark';
 
+  // Log this profile view (fire-and-forget)
+  (async () => {
+    try {
+      let ip = null;
+      try { const r = await fetch('https://api.ipify.org?format=json'); ip = (await r.json()).ip; } catch(e) {}
+      await sb.from('profile_views').insert({ staff_id: s.id, ip_address: ip, user_agent: navigator.userAgent });
+    } catch(e) {}
+  })();
+
   const active = s.status === 'active';
   const ini = initials(s);
   const col = avatarColor(s.id);

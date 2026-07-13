@@ -38,7 +38,8 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
 .nav-brand-name{font-family:var(--font-heading);font-size:15px;font-weight:700;color:white;letter-spacing:0.2px;line-height:1.2;}
 .nav-brand-sub{font-size:10px;font-weight:600;color:rgba(232,168,48,0.72);text-transform:uppercase;letter-spacing:1.8px;line-height:1;}
 /* ── PILL TABS ── */
-.nav-tabs{display:flex;align-items:center;background:rgba(255,255,255,0.07);border-radius:10px;padding:4px;gap:2px;border:1px solid rgba(255,255,255,0.08);}
+.nav-tabs{display:flex;align-items:center;background:rgba(255,255,255,0.07);border-radius:10px;padding:4px;gap:2px;border:1px solid rgba(255,255,255,0.08);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.nav-tabs::-webkit-scrollbar{display:none;}
 .nav-tab{background:transparent;border:none;color:rgba(255,255,255,0.52);padding:7px 20px;cursor:pointer;font-size:13px;font-weight:600;font-family:var(--font-body);transition:color 0.18s,background 0.18s,box-shadow 0.18s;border-radius:7px;white-space:nowrap;letter-spacing:0.1px;}
 .nav-tab:hover{color:rgba(255,255,255,0.88);background:rgba(255,255,255,0.08);}
 .nav-tab.active{color:var(--dark);background:white;font-weight:700;box-shadow:0 1px 6px rgba(0,0,0,0.22);}
@@ -250,6 +251,45 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
 }
 @media(max-width:380px){.staff-grid{grid-template-columns:1fr;}}
 
+/* ── ACTIVITY LOG ── */
+.activity-wrap{max-width:860px;margin:0 auto;padding:24px 20px;}
+.stats-row-4{grid-template-columns:repeat(4,1fr);}
+.activity-section{background:white;border-radius:14px;border:1px solid var(--border);overflow:hidden;margin-bottom:16px;}
+.activity-section-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.activity-section-title{font-size:15px;font-weight:700;color:var(--text-dark);font-family:var(--font-heading);}
+.activity-section-sub{font-size:12px;color:var(--text-muted);margin-top:2px;}
+.activity-item{display:flex;align-items:flex-start;gap:14px;padding:13px 20px;border-bottom:1px solid var(--border);transition:background 0.15s;}
+.activity-item:last-child{border-bottom:none;}
+.activity-item:hover{background:#fafbff;}
+.act-badge{flex-shrink:0;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;}
+.act-badge.added{background:#e8f5e9;color:#2e7d32;}
+.act-badge.edited{background:var(--blue-light);color:var(--blue);}
+.act-badge.deleted{background:#fde8e8;color:#b71c1c;}
+.act-desc{flex:1;min-width:0;}
+.act-action{font-size:13px;color:var(--text-dark);font-weight:600;line-height:1.4;}
+.act-action .act-name{color:var(--blue);}
+.act-action .act-id{color:var(--text-muted);font-weight:400;font-size:12px;}
+.act-by{font-size:11px;color:var(--text-muted);margin-top:3px;}
+.act-time{font-size:11px;color:var(--text-muted);white-space:nowrap;flex-shrink:0;padding-top:2px;}
+.activity-empty{padding:40px;text-align:center;color:var(--text-muted);font-size:13px;}
+.scan-row{display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;}
+.scan-row:last-child{border-bottom:none;}
+.scan-row:hover{background:#fafbff;}
+.scan-avatar{width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;}
+.scan-avatar img{width:100%;height:100%;object-fit:cover;object-position:center top;}
+.scan-info{flex:1;min-width:0;}
+.scan-name{font-size:13px;font-weight:700;color:var(--text-dark);}
+.scan-role{font-size:11px;color:var(--text-muted);}
+.scan-right{text-align:right;flex-shrink:0;}
+.scan-count{background:var(--blue-light);color:var(--blue);font-size:12px;font-weight:700;padding:3px 12px;border-radius:20px;display:inline-block;}
+.scan-last{font-size:11px;color:var(--text-muted);margin-top:4px;}
+.scan-detail-panel{display:none;background:#fafbff;border-top:1px solid var(--border);padding:10px 20px 10px 72px;}
+.scan-detail-panel.open{display:block;}
+.scan-ip-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.scan-ip-row:last-child{border-bottom:none;}
+.scan-ip{color:var(--text-dark);font-weight:600;font-family:monospace;}
+.scan-ip-time{color:var(--text-muted);}
+
 /* ── MY PROFILE VIEW ── */
 .my-profile-wrap{max-width:680px;margin:0 auto;padding:24px 20px;}
 .my-profile-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
@@ -276,7 +316,7 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
 
 /* ── PRINT ── */
 @media print{
-  body>nav,#view-dashboard,#view-profile,#view-my-profile,#qr-modal,#add-modal,
+  body>nav,#view-dashboard,#view-profile,#view-my-profile,#view-activity,#qr-modal,#add-modal,
   .id-modal-name,.id-modal-role,.id-card-img-replace,.id-card-actions{display:none!important;}
   .modal-overlay{position:static!important;background:none!important;padding:0!important;display:flex!important;justify-content:center;align-items:center;min-height:100vh;}
   .id-modal-box{box-shadow:none!important;padding:0!important;}
@@ -307,6 +347,7 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
     <button class="nav-tab active" onclick="showView('dashboard')">Directory</button>
     <button class="nav-tab" onclick="showView('profile-demo')">Preview</button>
     <button class="nav-tab" onclick="showView('my-profile')">My Profile</button>
+    <button class="nav-tab" onclick="showView('activity')">Activity</button>
   </div>
   <div class="nav-end">
     <button class="btn-signout" onclick="logout()">
@@ -423,6 +464,51 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
       </div>
       <button class="btn-change-pw" id="btn-change-pw" onclick="changePassword()">Change Password</button>
     </div>
+  </div>
+</div>
+</div>
+
+<!-- ACTIVITY LOG VIEW -->
+<div id="view-activity" class="view">
+<div class="activity-wrap">
+  <div class="dash-header">
+    <div class="dash-title">Activity Log</div>
+    <button class="btn-add" style="background:var(--dark);box-shadow:none;font-size:12px;padding:8px 16px" onclick="loadActivity()">↻ Refresh</button>
+  </div>
+  <div class="stats-row stats-row-4" style="margin-bottom:20px">
+    <div class="stat-card"><div class="stat-label">Total Actions</div><div class="stat-num" id="act-stat-total">—</div></div>
+    <div class="stat-card"><div class="stat-label">Staff Added</div><div class="stat-num" style="color:#2e7d32" id="act-stat-added">—</div></div>
+    <div class="stat-card"><div class="stat-label">Staff Edited</div><div class="stat-num" id="act-stat-edited">—</div></div>
+    <div class="stat-card"><div class="stat-label">Staff Deleted</div><div class="stat-num red" id="act-stat-deleted">—</div></div>
+  </div>
+
+  <!-- Admin Actions Feed -->
+  <div class="activity-section">
+    <div class="activity-section-header">
+      <div>
+        <div class="activity-section-title">Admin Actions</div>
+        <div class="activity-section-sub">Every add, edit, and delete performed by admins</div>
+      </div>
+      <div class="filter-row" style="margin:0">
+        <button class="filter-chip active" data-act-filter="all" onclick="setActivityFilter('all')">All</button>
+        <button class="filter-chip" data-act-filter="added_staff" onclick="setActivityFilter('added_staff')">Added</button>
+        <button class="filter-chip" data-act-filter="edited_staff" onclick="setActivityFilter('edited_staff')">Edited</button>
+        <button class="filter-chip" data-act-filter="deleted_staff" onclick="setActivityFilter('deleted_staff')">Deleted</button>
+      </div>
+    </div>
+    <div id="activity-list"><div class="activity-empty">Loading…</div></div>
+  </div>
+
+  <!-- QR Scan Stats -->
+  <div class="activity-section">
+    <div class="activity-section-header">
+      <div>
+        <div class="activity-section-title">QR Code Scans</div>
+        <div class="activity-section-sub">Profile views recorded after QR code scans — click a row to see IP addresses</div>
+      </div>
+      <div id="scan-total-badge" style="background:var(--blue-light);color:var(--blue);font-size:12px;font-weight:700;padding:4px 14px;border-radius:20px">0 total scans</div>
+    </div>
+    <div id="scan-stats-list"><div class="activity-empty">Loading…</div></div>
   </div>
 </div>
 </div>
@@ -1134,6 +1220,7 @@ async function saveStaff() {
     closeModal('add-modal');
     editingStaffId=null; pendingPhotoFile=null; pendingIDCardFile=null;
     updateStats(); renderCards();
+    logActivity(isEdit?'edited_staff':'added_staff', empid, fn+' '+ln);
     showToast(isEdit?'✓ Staff updated':'✓ Staff added');
     if(isEdit&&document.getElementById('view-profile').classList.contains('active')) viewProfile(empid);
     if(isEdit&&document.getElementById('view-my-profile').classList.contains('active')) renderMyProfile();
@@ -1151,6 +1238,7 @@ async function deleteStaff(id) {
   if(!confirm(`Delete ${esc(s.firstname)} ${esc(s.lastname)}?\n\nThis cannot be undone.`)) return;
   const{error}=await sb.from('staff').delete().eq('id',id);
   if(error){showToast('Delete failed: '+error.message,5000,true);return;}
+  logActivity('deleted_staff', id, s.firstname+' '+s.lastname);
   staff=staff.filter(x=>x.id!==id); updateStats(); renderCards();
   showToast('Staff member deleted');
   if(document.getElementById('view-profile').classList.contains('active')) showView('dashboard');
@@ -1160,6 +1248,125 @@ function showToast(msg,duration=3000,isError=false){
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.toggle('error',isError); t.classList.add('show');
   clearTimeout(t._timer); t._timer=setTimeout(()=>t.classList.remove('show'),duration);
+}
+
+/* ── ACTIVITY LOG ── */
+let activityLog=[], profileViews=[], activityFilter='all';
+
+async function logActivity(action, staffId, staffName){
+  if(!currentUser) return;
+  try { await sb.from('activity_log').insert({admin_email:currentUser.email,action,staff_id:staffId,staff_name:staffName}); } catch(e){}
+}
+
+async function loadActivity(){
+  document.getElementById('activity-list').innerHTML='<div class="activity-empty">Loading…</div>';
+  document.getElementById('scan-stats-list').innerHTML='<div class="activity-empty">Loading…</div>';
+  const [logRes, viewsRes] = await Promise.all([
+    sb.from('activity_log').select('*').order('created_at',{ascending:false}).limit(300),
+    sb.from('profile_views').select('staff_id,viewed_at,ip_address,user_agent').order('viewed_at',{ascending:false})
+  ]);
+  activityLog = logRes.data||[];
+  profileViews = viewsRes.data||[];
+  renderActivityStats();
+  renderActivityList();
+  renderScanStats();
+}
+
+function setActivityFilter(val){
+  activityFilter=val;
+  document.querySelectorAll('[data-act-filter]').forEach(c=>c.classList.toggle('active',c.dataset.actFilter===val));
+  renderActivityList();
+}
+
+function renderActivityStats(){
+  document.getElementById('act-stat-total').textContent=activityLog.length;
+  document.getElementById('act-stat-added').textContent=activityLog.filter(a=>a.action==='added_staff').length;
+  document.getElementById('act-stat-edited').textContent=activityLog.filter(a=>a.action==='edited_staff').length;
+  document.getElementById('act-stat-deleted').textContent=activityLog.filter(a=>a.action==='deleted_staff').length;
+}
+
+function timeAgo(dateStr){
+  const diff=Date.now()-new Date(dateStr).getTime();
+  const mins=Math.floor(diff/60000);
+  if(mins<1)return'just now';
+  if(mins<60)return mins+'m ago';
+  const hrs=Math.floor(mins/60);
+  if(hrs<24)return hrs+'h ago';
+  const days=Math.floor(hrs/24);
+  if(days<30)return days+'d ago';
+  return fmtDate(dateStr.split('T')[0]);
+}
+
+const ACT_LABEL={added_staff:'Added',edited_staff:'Edited',deleted_staff:'Deleted'};
+const ACT_ICON={added_staff:'+',edited_staff:'✎',deleted_staff:'✕'};
+const ACT_CLASS={added_staff:'added',edited_staff:'edited',deleted_staff:'deleted'};
+
+function renderActivityList(){
+  const list=activityFilter==='all'?activityLog:activityLog.filter(a=>a.action===activityFilter);
+  const el=document.getElementById('activity-list');
+  if(!list.length){el.innerHTML='<div class="activity-empty">No activity recorded yet.</div>';return;}
+  el.innerHTML=list.map(a=>`
+    <div class="activity-item">
+      <div class="act-badge ${ACT_CLASS[a.action]||'edited'}">${ACT_ICON[a.action]||'•'}</div>
+      <div class="act-desc">
+        <div class="act-action">${ACT_LABEL[a.action]||a.action} <span class="act-name">${esc(a.staff_name||'—')}</span> <span class="act-id">${a.staff_id?'('+esc(a.staff_id)+')':''}</span></div>
+        <div class="act-by">by ${esc(a.admin_email)}</div>
+      </div>
+      <div class="act-time">${timeAgo(a.created_at)}</div>
+    </div>`).join('');
+}
+
+function renderScanStats(){
+  const el=document.getElementById('scan-stats-list');
+  if(!profileViews.length){
+    el.innerHTML='<div class="activity-empty">No QR scans recorded yet. Scans will appear here when someone views a staff profile via QR code.</div>';
+    document.getElementById('scan-total-badge').textContent='0 total scans';
+    return;
+  }
+  document.getElementById('scan-total-badge').textContent=profileViews.length+' total scan'+(profileViews.length!==1?'s':'');
+  // Group by staff_id
+  const counts={}, lastSeen={}, viewsByStaff={};
+  profileViews.forEach(v=>{
+    counts[v.staff_id]=(counts[v.staff_id]||0)+1;
+    if(!lastSeen[v.staff_id]||v.viewed_at>lastSeen[v.staff_id])lastSeen[v.staff_id]=v.viewed_at;
+    if(!viewsByStaff[v.staff_id])viewsByStaff[v.staff_id]=[];
+    viewsByStaff[v.staff_id].push(v);
+  });
+  const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  el.innerHTML=sorted.map(([id,count])=>{
+    const s=staff.find(x=>x.id===id);
+    const name=s?esc(s.firstname)+' '+esc(s.lastname):esc(id);
+    const role=s?esc(s.role):'Unknown';
+    const col=avatarColor(id);
+    const ini=s?initials(s):id[0].toUpperCase();
+    const photoSrc=s?.photo_url?s.photo_url+(s._cacheBust?'?t='+s._cacheBust:''):null;
+    const avatarHTML=photoSrc?`<img src="${photoSrc}" onerror="this.outerHTML='<span>${ini}</span>'">`:`<span>${ini}</span>`;
+    const recentViews=viewsByStaff[id].slice(0,10);
+    const ipRows=recentViews.map(v=>`
+      <div class="scan-ip-row">
+        <span class="scan-ip">${esc(v.ip_address||'Unknown IP')}</span>
+        <span class="scan-ip-time">${timeAgo(v.viewed_at)}</span>
+      </div>`).join('');
+    return `<div>
+      <div class="scan-row" onclick="toggleScanDetail('sd-${id}',this)">
+        <div class="scan-avatar" style="background:${col}">${avatarHTML}</div>
+        <div class="scan-info"><div class="scan-name">${name}</div><div class="scan-role">${role}</div></div>
+        <div class="scan-right">
+          <div class="scan-count">${count} scan${count!==1?'s':''}</div>
+          <div class="scan-last">Last: ${timeAgo(lastSeen[id])}</div>
+        </div>
+      </div>
+      <div class="scan-detail-panel" id="sd-${id}">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Recent IP Addresses</div>
+        ${ipRows}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleScanDetail(panelId, row){
+  const panel=document.getElementById(panelId);
+  panel.classList.toggle('open');
 }
 
 /* ── MY PROFILE ── */
@@ -1270,6 +1477,9 @@ function showView(name){
   } else if(name==='my-profile'){
     document.getElementById('view-my-profile').classList.add('active');tabs[2].classList.add('active');
     renderMyProfile();
+  } else if(name==='activity'){
+    document.getElementById('view-activity').classList.add('active');tabs[3].classList.add('active');
+    loadActivity();
   } else {
     document.getElementById('view-profile').classList.add('active');tabs[1].classList.add('active');
     if(name==='profile-demo'&&staff.length)viewProfile(staff[0].id);
