@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "ucwestpark-staff-directory.vercel.app"
+        }
+      ],
+      "destination": "https://staff.ucwestpark.com/$1",
+      "permanent": true
+    }
+  ]
+}
