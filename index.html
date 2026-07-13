@@ -265,8 +265,11 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
 .change-pw-body{padding:22px 24px;}
 .pw-field{margin-bottom:14px;}
 .pw-label{font-size:12px;font-weight:600;color:var(--text-mid);margin-bottom:6px;display:block;}
-.pw-input{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:7px;font-size:13px;color:var(--text-dark);background:white;font-family:var(--font-body);transition:border-color 0.15s;}
+.pw-input-wrap{position:relative;display:flex;align-items:center;}
+.pw-input{width:100%;padding:9px 40px 9px 12px;border:1px solid var(--border);border-radius:7px;font-size:13px;color:var(--text-dark);background:white;font-family:var(--font-body);transition:border-color 0.15s;}
 .pw-input:focus{outline:none;border-color:var(--blue-accent);}
+.pw-toggle{position:absolute;right:10px;background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px;display:flex;align-items:center;transition:color 0.15s;}
+.pw-toggle:hover{color:var(--blue);}
 .btn-change-pw{background:var(--blue);color:white;border:none;padding:11px 28px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font-body);transition:background 0.15s;}
 .btn-change-pw:hover{background:var(--blue-mid);}
 .btn-change-pw:disabled{background:#A0B8E0;cursor:not-allowed;}
@@ -393,15 +396,30 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
     <div class="change-pw-body">
       <div class="pw-field">
         <label class="pw-label" for="pw-current">Current Password</label>
-        <input class="pw-input" type="password" id="pw-current" placeholder="Enter your current password" autocomplete="current-password">
+        <div class="pw-input-wrap">
+          <input class="pw-input" type="password" id="pw-current" placeholder="Enter your current password" autocomplete="current-password">
+          <button type="button" class="pw-toggle" onclick="togglePw('pw-current',this)" aria-label="Show password" tabindex="-1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
       </div>
       <div class="pw-field">
         <label class="pw-label" for="pw-new">New Password</label>
-        <input class="pw-input" type="password" id="pw-new" placeholder="At least 8 characters" autocomplete="new-password">
+        <div class="pw-input-wrap">
+          <input class="pw-input" type="password" id="pw-new" placeholder="At least 8 characters" autocomplete="new-password">
+          <button type="button" class="pw-toggle" onclick="togglePw('pw-new',this)" aria-label="Show password" tabindex="-1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
       </div>
       <div class="pw-field" style="margin-bottom:22px">
         <label class="pw-label" for="pw-confirm">Confirm New Password</label>
-        <input class="pw-input" type="password" id="pw-confirm" placeholder="Repeat new password" autocomplete="new-password">
+        <div class="pw-input-wrap">
+          <input class="pw-input" type="password" id="pw-confirm" placeholder="Repeat new password" autocomplete="new-password">
+          <button type="button" class="pw-toggle" onclick="togglePw('pw-confirm',this)" aria-label="Show password" tabindex="-1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
       </div>
       <button class="btn-change-pw" id="btn-change-pw" onclick="changePassword()">Change Password</button>
     </div>
@@ -1206,6 +1224,16 @@ function renderMyProfile(){
 function editMyProfile(){
   const s=findAdminStaff(); if(!s) return;
   editStaff(s.id);
+}
+
+function togglePw(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const show = input.type === 'password';
+  input.type = show ? 'text' : 'password';
+  btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+  btn.innerHTML = show
+    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+    : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
 }
 
 async function changePassword(){
