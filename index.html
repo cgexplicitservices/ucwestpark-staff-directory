@@ -628,11 +628,25 @@ async function init() {
   currentUser = session.user;
   document.getElementById('app-loading').style.display = 'none';
   await loadStaff(); initCardBack();
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT') { window.location.href = 'login.html'; }
+    if (event === 'TOKEN_REFRESHED' && session) { currentUser = session.user; }
+  });
 }
 
 async function loadStaff() {
   const { data, error } = await sb.from('staff').select('*').order('id');
-  if (error) { showToast('Could not load staff: ' + error.message, 5000, true); return; }
+  if (error) {
+    if (error.message?.includes('JWT') || error.message?.includes('token')) {
+      const { data: { session }, error: refreshErr } = await sb.auth.refreshSession();
+      if (refreshErr || !session) { window.location.replace('login.html'); return; }
+      currentUser = session.user;
+      const { data: data2, error: error2 } = await sb.from('staff').select('*').order('id');
+      if (error2) { showToast('Could not load staff: ' + error2.message, 5000, true); return; }
+      staff = data2 || []; updateStats(); renderCards(); return;
+    }
+    showToast('Could not load staff: ' + error.message, 5000, true); return;
+  }
   staff = data || []; updateStats(); renderCards();
 }
 
