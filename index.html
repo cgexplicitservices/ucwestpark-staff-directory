@@ -231,7 +231,9 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
   .nav-logo-wrap{width:36px;height:36px;border-radius:9px;padding:3px;}
   .nav-brand-text{display:none;}
   .nav-tabs{padding:3px;gap:1px;}
-  .nav-tab{padding:6px 12px;font-size:12px;}
+  .nav-tab{padding:5px 9px;font-size:11px;}
+  .my-profile-wrap{padding:12px 12px 40px;}
+  .change-pw-body{padding:16px;}
   .btn-signout span{display:none;}
   .btn-signout{padding:7px 9px;gap:0;border-radius:8px;}
   .dash-wrap{padding:16px 12px;}
@@ -248,9 +250,30 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
 }
 @media(max-width:380px){.staff-grid{grid-template-columns:1fr;}}
 
+/* ── MY PROFILE VIEW ── */
+.my-profile-wrap{max-width:680px;margin:0 auto;padding:24px 20px;}
+.my-profile-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.my-profile-title{font-size:20px;font-weight:700;color:var(--text-dark);font-family:var(--font-heading);}
+.my-profile-unlinked{background:white;border-radius:16px;border:1px solid var(--border);padding:40px 28px;text-align:center;}
+.my-profile-unlinked-icon{font-size:44px;margin-bottom:14px;}
+.my-profile-unlinked-title{font-size:17px;font-weight:700;color:var(--text-dark);font-family:var(--font-heading);margin-bottom:10px;}
+.my-profile-unlinked-msg{font-size:13px;color:var(--text-muted);line-height:1.7;}
+.my-profile-unlinked-email{display:inline-block;background:var(--blue-light);color:var(--blue);font-size:12px;font-weight:700;padding:3px 12px;border-radius:20px;margin:6px 0;}
+.change-pw-card{background:white;border-radius:16px;border:1px solid var(--border);margin-top:16px;overflow:hidden;}
+.change-pw-card-header{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.change-pw-title{font-size:15px;font-weight:700;color:var(--text-dark);font-family:var(--font-heading);}
+.change-pw-body{padding:22px 24px;}
+.pw-field{margin-bottom:14px;}
+.pw-label{font-size:12px;font-weight:600;color:var(--text-mid);margin-bottom:6px;display:block;}
+.pw-input{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:7px;font-size:13px;color:var(--text-dark);background:white;font-family:var(--font-body);transition:border-color 0.15s;}
+.pw-input:focus{outline:none;border-color:var(--blue-accent);}
+.btn-change-pw{background:var(--blue);color:white;border:none;padding:11px 28px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font-body);transition:background 0.15s;}
+.btn-change-pw:hover{background:var(--blue-mid);}
+.btn-change-pw:disabled{background:#A0B8E0;cursor:not-allowed;}
+
 /* ── PRINT ── */
 @media print{
-  body>nav,#view-dashboard,#view-profile,#qr-modal,#add-modal,
+  body>nav,#view-dashboard,#view-profile,#view-my-profile,#qr-modal,#add-modal,
   .id-modal-name,.id-modal-role,.id-card-img-replace,.id-card-actions{display:none!important;}
   .modal-overlay{position:static!important;background:none!important;padding:0!important;display:flex!important;justify-content:center;align-items:center;min-height:100vh;}
   .id-modal-box{box-shadow:none!important;padding:0!important;}
@@ -279,7 +302,8 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
   </div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showView('dashboard')">Directory</button>
-    <button class="nav-tab" onclick="showView('profile-demo')">Profile Preview</button>
+    <button class="nav-tab" onclick="showView('profile-demo')">Preview</button>
+    <button class="nav-tab" onclick="showView('my-profile')">My Profile</button>
   </div>
   <div class="nav-end">
     <button class="btn-signout" onclick="logout()">
@@ -347,6 +371,41 @@ body{font-family:'Nunito Sans',sans-serif;background:#F5F8FF;min-height:100vh;}
     </div>
   </div>
   <div id="profile-content"></div>
+</div>
+</div>
+
+<!-- MY PROFILE VIEW -->
+<div id="view-my-profile" class="view">
+<div class="my-profile-wrap">
+  <div class="my-profile-header">
+    <div class="my-profile-title">My Profile</div>
+    <button id="my-profile-edit-btn" class="profile-action-btn profile-action-edit" onclick="editMyProfile()" style="display:none">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+      Edit Profile
+    </button>
+  </div>
+  <div id="my-profile-content"></div>
+  <div class="change-pw-card">
+    <div class="change-pw-card-header">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <div class="change-pw-title">Change Password</div>
+    </div>
+    <div class="change-pw-body">
+      <div class="pw-field">
+        <label class="pw-label" for="pw-current">Current Password</label>
+        <input class="pw-input" type="password" id="pw-current" placeholder="Enter your current password" autocomplete="current-password">
+      </div>
+      <div class="pw-field">
+        <label class="pw-label" for="pw-new">New Password</label>
+        <input class="pw-input" type="password" id="pw-new" placeholder="At least 8 characters" autocomplete="new-password">
+      </div>
+      <div class="pw-field" style="margin-bottom:22px">
+        <label class="pw-label" for="pw-confirm">Confirm New Password</label>
+        <input class="pw-input" type="password" id="pw-confirm" placeholder="Repeat new password" autocomplete="new-password">
+      </div>
+      <button class="btn-change-pw" id="btn-change-pw" onclick="changePassword()">Change Password</button>
+    </div>
+  </div>
 </div>
 </div>
 
@@ -451,6 +510,7 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 let staff = [], currentQRStaff = null, currentIDStaff = null;
 let pendingPhotoFile = null, pendingIDCardFile = null, editingStaffId = null;
 let cardBack = 'id-cards/card-back.png', statusFilter = 'all';
+let currentUser = null;
 
 function setStatusFilter(val) {
   statusFilter = val;
@@ -461,6 +521,7 @@ function setStatusFilter(val) {
 async function init() {
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { window.location.replace('login.html'); return; }
+  currentUser = session.user;
   document.getElementById('app-loading').style.display = 'none';
   await loadStaff(); initCardBack();
 }
@@ -1057,6 +1118,7 @@ async function saveStaff() {
     updateStats(); renderCards();
     showToast(isEdit?'✓ Staff updated':'✓ Staff added');
     if(isEdit&&document.getElementById('view-profile').classList.contains('active')) viewProfile(empid);
+    if(isEdit&&document.getElementById('view-my-profile').classList.contains('active')) renderMyProfile();
     if(record.photo_url){
       const savedRecord={id:empid,...record};
       setTimeout(()=>showToast('Generating ID card…',4000),800);
@@ -1082,13 +1144,108 @@ function showToast(msg,duration=3000,isError=false){
   clearTimeout(t._timer); t._timer=setTimeout(()=>t.classList.remove('show'),duration);
 }
 
+/* ── MY PROFILE ── */
+function findAdminStaff(){
+  if(!currentUser) return null;
+  return staff.find(s=>s.email&&s.email.toLowerCase()===currentUser.email.toLowerCase())||null;
+}
+
+function renderMyProfile(){
+  const s=findAdminStaff();
+  const editBtn=document.getElementById('my-profile-edit-btn');
+  const content=document.getElementById('my-profile-content');
+  if(!s){
+    editBtn.style.display='none';
+    content.innerHTML=`<div class="my-profile-unlinked">
+      <div class="my-profile-unlinked-icon">👤</div>
+      <div class="my-profile-unlinked-title">No linked staff record</div>
+      <div class="my-profile-unlinked-msg">Your account<br><span class="my-profile-unlinked-email">${esc(currentUser.email)}</span><br>doesn't match any staff record. Add yourself to the Directory using this email address, then return here to manage your profile.</div>
+    </div>`;
+    return;
+  }
+  editBtn.style.display='inline-flex';
+  const active=s.status==='active';
+  const ini=initials(s);
+  const _psrc=s.photo_url?s.photo_url+(s._cacheBust?'?t='+s._cacheBust:''):null;
+  const photoHTML=_psrc
+    ?`<img src="${_psrc}" onerror="this.outerHTML='<div class=profile-photo-initials>${ini}</div>'">`
+    :`<div class="profile-photo-initials">${ini}</div>`;
+  content.innerHTML=`
+    <div class="profile-hero">
+      <div class="profile-logo-corner">
+        <img src="UC_west_park_Logo-PNG.png" alt="UC Westpark" onerror="this.parentElement.innerHTML='<span class=profile-logo-corner-text>UC Westpark</span>'">
+      </div>
+      <div class="profile-photo-wrap">${photoHTML}</div>
+      <div class="profile-meta">
+        <div class="profile-name">${esc(s.firstname)} ${esc(s.lastname)}</div>
+        <div class="profile-role">${esc(s.role)} · ${esc(s.dept)}</div>
+        <span class="profile-status ${s.status}">
+          <span style="width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block"></span>
+          ${active?'Active Employee':'No Longer Active'}
+        </span>
+      </div>
+    </div>
+    <div class="profile-body">
+      ${!active?`<div class="inactive-banner">⚠ This person is no longer an active employee of UC Westpark.</div>`:''}
+      <div class="profile-section"><div class="section-label">About</div><p class="bio-text">${esc(s.bio)||'No bio available.'}</p></div>
+      <div class="profile-section">
+        <div class="section-label">Details</div>
+        <div class="info-row"><span class="info-key">Employee ID</span><span class="info-val">${esc(s.id)}</span></div>
+        <div class="info-row"><span class="info-key">Department</span><span class="info-val">${esc(s.dept)}</span></div>
+        <div class="info-row"><span class="info-key">Joined</span><span class="info-val">${fmtDate(s.join_date)}</span></div>
+        <div class="info-row"><span class="info-key">Status</span><span class="info-val">${active?'✅ Active':'❌ Inactive'}</span></div>
+      </div>
+      <div class="profile-section">
+        <div class="section-label">Contact</div>
+        <div class="info-row"><span class="info-key">Email</span><span class="info-val"><a href="mailto:${esc(s.email)}">${esc(s.email)}</a></span></div>
+        <div class="info-row"><span class="info-key">Phone</span><span class="info-val"><a href="tel:${(s.phone||'').replace(/\s/g,'')}">${esc(s.phone)}</a></span></div>
+      </div>
+    </div>`;
+}
+
+function editMyProfile(){
+  const s=findAdminStaff(); if(!s) return;
+  editStaff(s.id);
+}
+
+async function changePassword(){
+  const current=document.getElementById('pw-current').value;
+  const newPw=document.getElementById('pw-new').value;
+  const confirm=document.getElementById('pw-confirm').value;
+  if(!current){showToast('Please enter your current password',3000,true);return;}
+  if(!newPw||newPw.length<8){showToast('New password must be at least 8 characters',4000,true);return;}
+  if(newPw!==confirm){showToast('Passwords do not match',4000,true);return;}
+  const btn=document.getElementById('btn-change-pw');
+  btn.disabled=true; btn.textContent='Updating…';
+  try {
+    const{error:signInErr}=await sb.auth.signInWithPassword({email:currentUser.email,password:current});
+    if(signInErr){showToast('Current password is incorrect',4000,true);return;}
+    const{error}=await sb.auth.updateUser({password:newPw});
+    if(error) throw error;
+    ['pw-current','pw-new','pw-confirm'].forEach(id=>document.getElementById(id).value='');
+    showToast('✓ Password changed successfully');
+  } catch(err){
+    showToast('Error: '+err.message,5000,true);
+  } finally{
+    btn.disabled=false; btn.textContent='Change Password';
+  }
+}
+
 async function logout(){await sb.auth.signOut();window.location.href='login.html';}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function showView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  if(name==='dashboard'){document.getElementById('view-dashboard').classList.add('active');document.querySelectorAll('.nav-tab')[0].classList.add('active');}
-  else{document.getElementById('view-profile').classList.add('active');document.querySelectorAll('.nav-tab')[1].classList.add('active');if(name==='profile-demo'&&staff.length)viewProfile(staff[0].id);}
+  const tabs=document.querySelectorAll('.nav-tab');
+  if(name==='dashboard'){
+    document.getElementById('view-dashboard').classList.add('active');tabs[0].classList.add('active');
+  } else if(name==='my-profile'){
+    document.getElementById('view-my-profile').classList.add('active');tabs[2].classList.add('active');
+    renderMyProfile();
+  } else {
+    document.getElementById('view-profile').classList.add('active');tabs[1].classList.add('active');
+    if(name==='profile-demo'&&staff.length)viewProfile(staff[0].id);
+  }
 }
 ['qr-modal','id-modal','add-modal'].forEach(id=>{document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeModal(id);});});
 document.addEventListener('DOMContentLoaded',init);
